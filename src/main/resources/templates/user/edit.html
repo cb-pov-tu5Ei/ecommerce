@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Ecommerce</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body>
+    <div class="container my-5">
+        <h1>Edit Profile</h1>
+        <form th:action="@{/user/update}" th:object="${user}" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" th:field="*{email}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" id="firstName" th:field="*{firstName}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" id="lastName" th:field="*{lastName}" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a th:href="@{/user/profile}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

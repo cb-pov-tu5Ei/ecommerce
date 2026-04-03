@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Ecommerce</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Ecommerce</a>
+        </div>
+    </nav>
+
+    <main class="container my-4">
+        <h2>Checkout</h2>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Shipping Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/orders/place}" method="post">
+                            <div class="mb-3">
+                                <label for="shippingAddress" class="form-label">Shipping Address</label>
+                                <textarea id="shippingAddress" name="shippingAddress" class="form-control"
+                                          rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-lg">Place Order</button>
+                            <a th:href="@{/cart}" class="btn btn-outline-secondary">Back to Cart</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="item : ${cartItems}">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span th:text="${item.productName + ' x' + item.quantity}">Product x1</span>
+                                <span th:text="${'$' + item.subtotal}">$0.00</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total:</strong>
+                            <strong th:text="${'$' + cartTotal}">$0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2026 Ecommerce Demo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

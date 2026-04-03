@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Ecommerce</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body>
+    <div class="container my-5">
+        <h1>My Profile</h1>
+        <div th:if="${user}">
+            <p><strong>Username:</strong> <span th:text="${user.username}">username</span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}">email</span></p>
+            <p><strong>Name:</strong> <span th:text="${user.firstName + ' ' + user.lastName}">name</span></p>
+            <a th:href="@{/user/edit}" class="btn btn-primary">Edit Profile</a>
+            <a th:href="@{/user/change-password}" class="btn btn-secondary">Change Password</a>
+        </div>
+    </div>
+</body>
+</html>

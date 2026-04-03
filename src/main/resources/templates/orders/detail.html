@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Ecommerce</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Ecommerce</a>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Order Details</h2>
+            <a th:href="@{/orders}" class="btn btn-outline-secondary">Back to Orders</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Order Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Order Number:</strong> <span th:text="${order.orderNumber}">ORD-123</span></p>
+                <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Date</span></p>
+                <p><strong>Status:</strong> <span th:text="${order.status}">PENDING</span></p>
+                <p><strong>Total Amount:</strong> <span th:text="${'$' + order.totalAmount}">$0.00</span></p>
+                <p><strong>Shipping Address:</strong><br>
+                    <span th:text="${order.shippingAddress}">Address</span>
+                </p>
+
+                <h6 class="mt-4">Order Items:</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${order.orderItems}">
+                            <td th:text="${item.product.name}">Product</td>
+                            <td th:text="${'$' + item.priceAtOrder}">$0.00</td>
+                            <td th:text="${item.quantity}">1</td>
+                            <td th:text="${'$' + item.subtotal}">$0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4">
+                    <a th:href="@{/}" class="btn btn-primary">Continue Shopping</a>
+                    <form th:if="${order.status.name() != 'CANCELLED' and order.status.name() != 'DELIVERED'}"
+                          th:action="@{/orders/{id}/cancel(id=${order.id})}"
+                          method="post"
+                          class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                        <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2026 Ecommerce Demo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

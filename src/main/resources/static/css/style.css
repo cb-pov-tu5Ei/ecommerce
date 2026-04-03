@@ -1,0 +1,57 @@
+/* Custom styles for Ecommerce Demo */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Product Cards */
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Cart Badge */
+.badge {
+    position: relative;
+    top: -2px;
+    margin-left: 5px;
+}
+
+/* Form Controls */
+.btn-link {
+    border: none;
+    background: none;
+    color: rgba(255,255,255,.75);
+    padding: 0;
+}
+
+.btn-link:hover {
+    color: white;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Ecommerce</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Ecommerce</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">Register</h2>
+
+                        <form th:action="@{/register}" th:object="${user}" method="post">
+                            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                                <p th:each="error : ${#fields.errors('*')}" th:text="${error}">Error</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" id="username" th:field="*{username}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
+                                     th:errors="*{username}">Error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}">Error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" id="firstName" th:field="*{firstName}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}"
+                                     th:errors="*{firstName}">Error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" id="lastName" th:field="*{lastName}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}"
+                                     th:errors="*{lastName}">Error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" th:field="*{password}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}">Error</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+                                     th:errors="*{confirmPassword}">Error</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Register</button>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <p class="text-center">
+                            Already have an account? <a th:href="@{/login}">Login here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2026 Ecommerce Demo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

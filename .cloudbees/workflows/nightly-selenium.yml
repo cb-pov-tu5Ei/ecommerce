@@ -1,0 +1,74 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: nightly-selenium-tests
+on:
+  schedule:
+    - cron: 0 2 * * *
+  workflow_dispatch:
+jobs:
+  selenium:
+    env:
+      SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: cloudbees-io/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Verify Smart Tests connectivity
+        uses: docker://cloudbeesdemo/maven-st:v1
+        run: |
+          smart-tests verify || true
+
+      - name: Record build with Smart Tests
+        uses: docker://cloudbeesdemo/maven-st:v1
+        run: |
+          smart-tests record build --build ${{ cloudbees.run_id }}
+
+      - name: Record session with Smart Tests
+        uses: docker://cloudbeesdemo/maven-st:v1
+        run: |
+          smart-tests record session --build ${{ cloudbees.run_id }} --test-suite maven-selenium-tests > session.txt
+          cat session.txt
+
+      - name: Compile tests
+        uses: docker://maven:3.9-eclipse-temurin-17
+        run: |
+          mvn test-compile
+
+      - name: Create Smart Tests subset for Selenium
+        uses: docker://cloudbeesdemo/maven-st:v1
+        run: |
+          find . -path '*/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst' -exec cat {} \; | \
+            grep "selenium" | \
+            grep -v "BaseSeleniumTest" | \
+            grep "Test\.class$\|Tests\.class$" > selenium-tests.lst
+          smart-tests subset maven --session @session.txt --confidence 99% --test-compile-created-file selenium-tests.lst > smart-tests-subset.txt
+          cat smart-tests-subset.txt
+
+      - name: Run Selenium tests
+        uses: docker://maven:3.9-eclipse-temurin-17
+        kind: test
+        run: |
+          apt-get update -qq
+          apt-get install -y wget gnupg2 unzip curl --no-install-recommends
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
+            > /etc/apt/sources.list.d/google-chrome.list
+          apt-get update -qq
+          apt-get install -y google-chrome-stable --no-install-recommends
+          mvn test -P selenium -Dsurefire.includesFile=$PWD/smart-tests-subset.txt
+
+      - name: Record test results with Smart Tests
+        uses: docker://cloudbeesdemo/maven-st:v1
+        if: ${{always()}}
+        run: |
+          smart-tests record tests maven --session @session.txt "**/target/surefire-reports"
+
+      - name: Publish test results
+        uses: cloudbees-io/publish-test-results@v2
+        if: ${{always()}}
+        with:
+          test-type: JUNIT
+          results-path: ${{ cloudbees.workspace }}/target/surefire-reports
