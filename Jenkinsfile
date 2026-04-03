@@ -134,14 +134,23 @@ spec:
 EOF
                             echo "=== Deploying to Artifactory ==="
                             echo "Target: ${ARTIFACTORY_URL}/artifactory/libs-snapshot"
-                            ./mvnw deploy -DskipTests
+                            ./mvnw deploy -DskipTests 2>&1 | tee deploy.log
                             echo "=== Deployment Complete ==="
+
+                            # Extract the actual JAR URL from Maven output
+                            ARTIFACT_URL=$(grep -o "https://[^ ]*.jar" deploy.log | grep -v ".pom" | head -1)
+                            echo "Artifact URL: $ARTIFACT_URL"
+                            echo "$ARTIFACT_URL" > artifact_url.txt
                         '''
-                        registerBuildArtifactMetadata(
-                            name: "ecommerce",
-                            url: "${env.ARTIFACTORY_URL}/artifactory/libs-snapshot/io/cb-demos/ecommerce/${env.ARTIFACT_VERSION}",
-                            version: "${env.ARTIFACT_VERSION}"
-                        )
+                        script {
+                            def artifactUrl = sh(script: 'cat artifact_url.txt', returnStdout: true).trim()
+                            registerBuildArtifactMetadata(
+                                name: "ecommerce",
+                                url: artifactUrl,
+                                version: "${env.ARTIFACT_VERSION}",
+                                type: "Maven"
+                            )
+                        }
                     }
                 }
             }
