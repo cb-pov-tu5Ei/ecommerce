@@ -137,6 +137,11 @@ EOF
                             ./mvnw deploy -DskipTests
                             echo "=== Deployment Complete ==="
                         '''
+                        registerBuildArtifactMetadata(
+                            name: "ecommerce",
+                            url: "${env.ARTIFACTORY_URL}/artifactory/libs-snapshot/io/cb-demos/ecommerce/${env.ARTIFACT_VERSION}",
+                            version: "${env.ARTIFACT_VERSION}"
+                        )
                     }
                 }
             }
