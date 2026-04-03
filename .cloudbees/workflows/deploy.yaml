@@ -21,10 +21,16 @@ jobs:
       - name: Checkout repository
         uses: cloudbees-io/checkout@v1
 
-      - name: Prepare deployment
-        id: prepare
+      - name: Run Ansible deployment
+        id: deploy
         uses: docker://python:3.11-slim
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
+          # Install Ansible and dependencies
+          apt-get update && apt-get install -y sshpass openssh-client
+          pip install ansible
+
           # Extract JAR filename from URL
           JAR_FILENAME=$(echo "${{ inputs.artifact-url }}" | grep -o '[^/]*\.jar$')
           JAR_PATH=$(echo "${{ inputs.artifact-url }}" | sed 's|https://artifactory.tjx-poc.cb-demos.io/artifactory/libs-snapshot/||')
@@ -36,23 +42,8 @@ jobs:
             VM_IP="${{ vars.PRODUCTION_VM_IP }}"
           fi
 
-          echo "JAR Filename: $JAR_FILENAME"
-          echo "JAR Path: $JAR_PATH"
-          echo "VM IP: $VM_IP"
-
-          # Save to outputs
-          echo "$JAR_FILENAME" > $CLOUDBEES_OUTPUTS/jar_filename
-          echo "$JAR_PATH" > $CLOUDBEES_OUTPUTS/jar_path
-          echo "$VM_IP" > $CLOUDBEES_OUTPUTS/vm_ip
-
-      - name: Run Ansible deployment
-        uses: docker://python:3.11-slim
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: "False"
-        run: |
-          # Install Ansible and dependencies
-          apt-get update && apt-get install -y sshpass openssh-client
-          pip install ansible
+          echo "Deploying to: $VM_IP"
+          echo "JAR: $JAR_FILENAME"
 
           # Setup SSH key
           mkdir -p ~/.ssh
@@ -61,14 +52,17 @@ jobs:
 
           # Run Ansible playbook
           cd ansible
-          ansible-playbook -i "${{ steps.prepare.outputs.vm_ip }}," deploy.yml \
+          ansible-playbook -i "${VM_IP}," deploy.yml \
             -e "ansible_user=ansible" \
             -e "ansible_ssh_private_key_file=~/.ssh/id_rsa" \
             -e "artifactory_user=${{ secrets.ARTIFACTORY_USER }}" \
             -e "artifactory_password=${{ secrets.ARTIFACTORY_PASSWORD }}" \
             -e "deploy_environment=${{ inputs.environment }}" \
-            -e "jar_filename=${{ steps.prepare.outputs.jar_filename }}" \
-            -e "artifactory_jar_path=${{ steps.prepare.outputs.jar_path }}"
+            -e "jar_filename=${JAR_FILENAME}" \
+            -e "artifactory_jar_path=${JAR_PATH}"
+
+          # Save VM IP for evidence
+          echo "$VM_IP" > $CLOUDBEES_OUTPUTS/vm_ip
 
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v2
@@ -81,13 +75,13 @@ jobs:
           content: |-
             ## Deployed to ${{ inputs.environment }}
 
-            **Application URL**: [http://${{ steps.prepare.outputs.vm_ip }}:8080/](http://${{ steps.prepare.outputs.vm_ip }}:8080/)
+            **Application URL**: [http://${{ steps.deploy.outputs.vm_ip }}:8080/](http://${{ steps.deploy.outputs.vm_ip }}:8080/)
 
             **Artifact**: ${{ inputs.artifact-url }}
 
             **Environment**: ${{ inputs.environment }}
 
-            **VM IP**: ${{ steps.prepare.outputs.vm_ip }}
+            **VM IP**: ${{ steps.deploy.outputs.vm_ip }}
 
             **Deployment Time**: ${{ cloudbees.run_id }}
           format: MARKDOWN
