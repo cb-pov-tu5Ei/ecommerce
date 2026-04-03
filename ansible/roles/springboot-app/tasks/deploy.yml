@@ -1,5 +1,10 @@
 ---
 # Download and deploy JAR file from Artifactory
+- name: Set JAR filename from artifact URL
+  set_fact:
+    jar_filename: "{{ artifact_url | basename }}"
+  when: artifact_url is defined
+
 - name: Ensure application directories exist
   file:
     path: "{{ item }}"
@@ -40,8 +45,8 @@
 
 - name: Download JAR from Artifactory
   get_url:
-    url: "{{ artifactory_base_url }}/{{ artifactory_jar_path }}"
-    dest: "{{ app_bin_dir }}/{{ jar_filename }}"
+    url: "{{ artifact_url | default(artifactory_base_url + '/' + artifactory_jar_path) }}"
+    dest: "{{ app_bin_dir }}/{{ artifact_url | basename | default(jar_filename) }}"
     url_username: "{{ artifactory_user }}"
     url_password: "{{ artifactory_password }}"
     force: yes
