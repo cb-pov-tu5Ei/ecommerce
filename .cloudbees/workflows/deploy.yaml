@@ -45,26 +45,12 @@ jobs:
           echo "$JAR_PATH" > $CLOUDBEES_OUTPUTS/jar_path
           echo "$VM_IP" > $CLOUDBEES_OUTPUTS/vm_ip
 
-      - name: Setup Ansible
-        uses: docker://python:3.11-slim
-        run: |
-          apt-get update && apt-get install -y sshpass openssh-client
-          pip install ansible
-
-      - name: Setup SSH key
-        uses: docker://python:3.11-slim
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ steps.prepare.outputs.vm_ip }} >> ~/.ssh/known_hosts || true
-
       - name: Run Ansible deployment
         uses: docker://python:3.11-slim
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          # Install Ansible
+          # Install Ansible and dependencies
           apt-get update && apt-get install -y sshpass openssh-client
           pip install ansible
 
