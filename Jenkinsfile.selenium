@@ -1,0 +1,131 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins: agent
+    job: ecommerce-selenium
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.12-eclipse-temurin-17
+    command:
+    - cat
+    tty: true
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "1000m"
+      limits:
+        memory: "3Gi"
+        cpu: "2000m"
+    volumeMounts:
+    - name: maven-repo
+      mountPath: /root/.m2/repository
+  volumes:
+  - name: maven-repo
+    emptyDir: {}
+"""
+        }
+    }
+
+    triggers {
+        cron('0 2 * * *')  // Run nightly at 2 AM UTC
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timestamps()
+        timeout(time: 60, unit: 'MINUTES')
+    }
+
+    environment {
+        MAVEN_OPTS = '-Dmaven.repo.local=/root/.m2/repository'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                container('maven') {
+                    checkout scm
+                    sh '''
+                        echo "=== Git Information ==="
+                        echo "Commit: $(git rev-parse HEAD)"
+                        echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
+                        chmod +x mvnw
+                    '''
+                }
+            }
+        }
+
+        stage('Install Chrome') {
+            steps {
+                container('maven') {
+                    sh '''
+                        echo "=== Installing Chrome for Selenium ==="
+                        apt-get update -qq
+                        apt-get install -y -qq wget gnupg
+                        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+                        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+                        apt-get update -qq
+                        apt-get install -y -qq google-chrome-stable
+                        google-chrome --version
+                    '''
+                }
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                container('maven') {
+                    sh '''
+                        echo "=== Running Selenium E2E Tests ==="
+                        echo "Running in headless mode"
+                        ./mvnw test -P selenium
+                    '''
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/target/surefire-reports/*.xml',
+                          allowEmptyResults: false,
+                          skipPublishingChecks: false
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo """
+                ========================================
+                SELENIUM TESTS PASSED
+                ========================================
+                All E2E browser tests completed successfully
+                Build: ${env.BUILD_NUMBER}
+                ========================================
+            """
+        }
+        failure {
+            echo """
+                ========================================
+                SELENIUM TESTS FAILED
+                ========================================
+                Check console output and test reports for details
+                Build: ${env.BUILD_NUMBER}
+                ========================================
+            """
+        }
+        always {
+            cleanWs(
+                deleteDirs: true,
+                patterns: [
+                    [pattern: 'target/**', type: 'INCLUDE']
+                ]
+            )
+        }
+    }
+}

@@ -164,4 +164,17 @@
 		</profile>
 	</profiles>
 
+	<distributionManagement>
+		<repository>
+			<id>artifactory-releases</id>
+			<name>Artifactory Release Repository</name>
+			<url>https://artifactory.tjx-poc.cb-demos.io/artifactory/libs-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>artifactory-snapshots</id>
+			<name>Artifactory Snapshot Repository</name>
+			<url>https://artifactory.tjx-poc.cb-demos.io/artifactory/libs-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
