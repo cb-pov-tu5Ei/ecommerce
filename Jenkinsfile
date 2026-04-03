@@ -171,13 +171,5 @@ EOF
         unstable {
             echo "Build unstable - some tests may have failed"
         }
-        always {
-            cleanWs(
-                deleteDirs: true,
-                patterns: [
-                    [pattern: 'target/**', type: 'INCLUDE']
-                ]
-            )
-        }
     }
 }

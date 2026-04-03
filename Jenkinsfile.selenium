@@ -111,13 +111,5 @@ spec:
                 ========================================
             """
         }
-        always {
-            cleanWs(
-                deleteDirs: true,
-                patterns: [
-                    [pattern: 'target/**', type: 'INCLUDE']
-                ]
-            )
-        }
     }
 }
