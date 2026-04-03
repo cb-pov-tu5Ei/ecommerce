@@ -137,8 +137,8 @@ EOF
                             ./mvnw deploy -DskipTests 2>&1 | tee deploy.log
                             echo "=== Deployment Complete ==="
 
-                            # Extract the actual JAR URL from Maven output
-                            ARTIFACT_URL=$(grep -o "https://[^ ]*.jar" deploy.log | grep -v ".pom" | head -1)
+                            # Extract the actual JAR URL from Maven output (only Artifactory uploads)
+                            ARTIFACT_URL=$(grep "Uploading to artifactory-snapshots:" deploy.log | grep "\.jar$" | grep -o "https://[^ ]*\.jar" | head -1)
                             echo "Artifact URL: $ARTIFACT_URL"
                             echo "$ARTIFACT_URL" > artifact_url.txt
                         '''
