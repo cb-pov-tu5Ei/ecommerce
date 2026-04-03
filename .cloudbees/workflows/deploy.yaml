@@ -50,9 +50,6 @@ jobs:
             -e "deploy_environment=${{ inputs.environment }}" \
             -e "artifact_url=${{ inputs.artifact-url }}"
 
-          # Save VM IP for evidence
-          echo "${{ vars.ip_address }}" > $CLOUDBEES_OUTPUTS/vm_ip
-
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v2
         with:
@@ -64,13 +61,13 @@ jobs:
           content: |-
             ## Deployed to ${{ inputs.environment }}
 
-            **Application URL**: [http://${{ steps.deploy.outputs.vm_ip }}:8080/](http://${{ steps.deploy.outputs.vm_ip }}:8080/)
+            **Application URL**: [http://${{ vars.ip_address }}:8080/](http://${{ vars.ip_address }}:8080/)
 
             **Artifact**: ${{ inputs.artifact-url }}
 
             **Environment**: ${{ inputs.environment }}
 
-            **VM IP**: ${{ steps.deploy.outputs.vm_ip }}
+            **VM IP**: ${{ vars.ip_address }}
 
             **Deployment Time**: ${{ cloudbees.run_id }}
           format: MARKDOWN
