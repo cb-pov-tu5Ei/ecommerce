@@ -31,33 +31,27 @@ jobs:
           apt-get update && apt-get install -y sshpass openssh-client
           pip install ansible
 
-          # Map environment to VM IP
-          if [ "${{ inputs.environment }}" = "staging" ]; then
-            VM_IP="${{ vars.STAGING_VM_IP }}"
-          else
-            VM_IP="${{ vars.PRODUCTION_VM_IP }}"
-          fi
-
-          echo "Deploying to: $VM_IP"
+          echo "Deploying to: ${{ vars.ip_address }}"
+          echo "User: ${{ vars.user }}"
           echo "Artifact: ${{ inputs.artifact-url }}"
 
           # Setup SSH key
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.ssh_key }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
           # Run Ansible playbook
           cd ansible
-          ansible-playbook -i "${VM_IP}," deploy.yml \
-            -e "ansible_user=ansible" \
+          ansible-playbook -i "${{ vars.ip_address }}," deploy.yml \
+            -e "ansible_user=${{ vars.user }}" \
             -e "ansible_ssh_private_key_file=~/.ssh/id_rsa" \
-            -e "artifactory_user=${{ secrets.ARTIFACTORY_USER }}" \
-            -e "artifactory_password=${{ secrets.ARTIFACTORY_PASSWORD }}" \
+            -e "artifactory_user=${{ secrets.artifactory_user }}" \
+            -e "artifactory_password=${{ secrets.artifactory_password }}" \
             -e "deploy_environment=${{ inputs.environment }}" \
             -e "artifact_url=${{ inputs.artifact-url }}"
 
           # Save VM IP for evidence
-          echo "$VM_IP" > $CLOUDBEES_OUTPUTS/vm_ip
+          echo "${{ vars.ip_address }}" > $CLOUDBEES_OUTPUTS/vm_ip
 
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v2
