@@ -33,3 +33,7 @@ build/
 .vscode/
 app.log
 .envrc
+
+### Ansible ###
+ansible/*.log
+ansible/*.retry

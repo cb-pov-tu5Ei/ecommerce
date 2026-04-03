@@ -1,0 +1,9 @@
+---
+# Main orchestration for Spring Boot application deployment
+- name: Deploy Spring Boot application
+  include_tasks: deploy.yml
+  tags: ['deploy', 'app']
+
+- name: Configure and manage systemd service
+  include_tasks: service.yml
+  tags: ['service', 'app']

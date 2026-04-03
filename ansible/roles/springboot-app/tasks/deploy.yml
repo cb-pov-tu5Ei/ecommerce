@@ -1,0 +1,61 @@
+---
+# Download and deploy JAR file from Artifactory
+- name: Ensure application directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0755'
+  become: yes
+  loop:
+    - "{{ app_base_dir }}"
+    - "{{ app_bin_dir }}"
+    - "{{ app_config_dir }}"
+    - "{{ app_log_dir }}"
+
+- name: Stop ecommerce service if running
+  systemd:
+    name: "{{ service_name }}"
+    state: stopped
+  become: yes
+  failed_when: false
+  ignore_errors: yes
+
+- name: Check if JAR file exists
+  stat:
+    path: "{{ app_bin_dir }}/{{ jar_filename }}"
+  register: jar_file_stat
+
+- name: Backup previous JAR file
+  copy:
+    src: "{{ app_bin_dir }}/{{ jar_filename }}"
+    dest: "{{ app_bin_dir }}/{{ jar_filename }}.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0755'
+  become: yes
+  when: jar_file_stat.stat.exists
+
+- name: Download JAR from Artifactory
+  get_url:
+    url: "{{ artifactory_base_url }}/{{ artifactory_jar_path }}"
+    dest: "{{ app_bin_dir }}/{{ jar_filename }}"
+    url_username: "{{ artifactory_user }}"
+    url_password: "{{ artifactory_password }}"
+    force: yes
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0755'
+    validate_certs: yes
+  become: yes
+
+- name: Create application log file if not exists
+  file:
+    path: "{{ app_log_dir }}/application.log"
+    state: touch
+    owner: "{{ service_user }}"
+    group: "{{ service_user }}"
+    mode: '0644'
+  become: yes

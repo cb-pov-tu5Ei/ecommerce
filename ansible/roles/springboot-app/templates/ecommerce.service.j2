@@ -1,0 +1,17 @@
+[Unit]
+Description=Ecommerce Spring Boot Application
+After=network.target
+
+[Service]
+Type=simple
+User={{ service_user }}
+WorkingDirectory={{ app_base_dir }}
+ExecStart=/usr/bin/java {{ jvm_options }} -jar {{ app_bin_dir }}/{{ jar_filename }}
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:{{ app_log_dir }}/application.log
+StandardError=append:{{ app_log_dir }}/application.log
+
+[Install]
+WantedBy=multi-user.target

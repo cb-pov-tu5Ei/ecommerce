@@ -1,0 +1,45 @@
+---
+- name: Deploy Ecommerce Spring Boot Application
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display deployment information
+      debug:
+        msg:
+          - "=========================================="
+          - "DEPLOYMENT STARTED"
+          - "=========================================="
+          - "Target Host: {{ inventory_hostname }}"
+          - "Environment: {{ deploy_environment | default('not specified') }}"
+          - "JAR File: {{ jar_filename }}"
+          - "JVM Options: {{ jvm_options }}"
+          - "=========================================="
+      tags: always
+
+    - name: Verify SSH connection
+      ping:
+      tags: always
+
+  roles:
+    - role: java
+      tags: ['java', 'setup']
+
+    - role: springboot-app
+      tags: ['app', 'deploy']
+
+    - role: health-check
+      tags: ['health', 'verify']
+
+  post_tasks:
+    - name: Display application URL
+      debug:
+        msg:
+          - "=========================================="
+          - "DEPLOYMENT COMPLETE"
+          - "=========================================="
+          - "Application URL: http://{{ ansible_default_ipv4.address }}:{{ app_port }}"
+          - "Access the application in your browser"
+          - "=========================================="
+      tags: always

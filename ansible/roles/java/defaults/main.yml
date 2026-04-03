@@ -1,0 +1,4 @@
+---
+# Default variables for Java installation role
+java_version: 17
+java_package: openjdk-17-jre-headless

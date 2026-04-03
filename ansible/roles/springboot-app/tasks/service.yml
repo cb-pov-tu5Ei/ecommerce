@@ -1,0 +1,42 @@
+---
+# Configure and manage systemd service
+- name: Template systemd service file
+  template:
+    src: ecommerce.service.j2
+    dest: /etc/systemd/system/{{ service_name }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify:
+    - reload systemd
+    - restart ecommerce
+
+- name: Ensure systemd is reloaded
+  meta: flush_handlers
+
+- name: Enable ecommerce service
+  systemd:
+    name: "{{ service_name }}"
+    enabled: yes
+    daemon_reload: yes
+  become: yes
+
+- name: Start ecommerce service
+  systemd:
+    name: "{{ service_name }}"
+    state: started
+  become: yes
+
+- name: Wait for service to be active
+  systemd:
+    name: "{{ service_name }}"
+  register: service_status
+  until: service_status.status.ActiveState == "active"
+  retries: 5
+  delay: 2
+  become: yes
+
+- name: Display service status
+  debug:
+    msg: "Service {{ service_name }} is {{ service_status.status.ActiveState }}"

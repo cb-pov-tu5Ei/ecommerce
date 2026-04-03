@@ -1,0 +1,35 @@
+---
+# Default variables for Spring Boot application deployment
+
+# Application configuration
+app_name: ecommerce
+jar_filename: ecommerce-0.0.1-SNAPSHOT.jar
+app_port: 8080
+
+# Directory paths
+app_base_dir: /opt/app
+app_bin_dir: /opt/app/bin
+app_config_dir: /opt/app/config
+app_log_dir: /opt/app/logs
+
+# Service configuration
+service_name: ecommerce
+service_user: ansible
+
+# JVM configuration (can be overridden per environment)
+jvm_options: "-Xms512m -Xmx1024m -XX:+UseG1GC"
+
+# Artifactory configuration
+artifactory_base_url: https://artifactory.tjx-poc.cb-demos.io/artifactory/libs-snapshot
+artifactory_jar_path: io/cb-demos/ecommerce/0.0.1-SNAPSHOT/ecommerce-0.0.1-SNAPSHOT.jar
+
+# Health check configuration
+health_check_retries: 30
+health_check_delay: 2
+
+# Required variables (must be passed via command-line):
+# - artifactory_user: Artifactory username
+# - artifactory_password: Artifactory password
+# - ansible_user: SSH user
+# - ansible_ssh_private_key_file: Path to SSH private key
+# - environment: Environment name (staging/production) - optional

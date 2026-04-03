@@ -1,0 +1,12 @@
+---
+# Handlers for Spring Boot application
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: restart ecommerce
+  systemd:
+    name: "{{ service_name }}"
+    state: restarted
+  become: yes

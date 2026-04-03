@@ -1,0 +1,44 @@
+---
+# Verify application is running and healthy
+- name: Wait for port {{ app_port }} to be listening
+  wait_for:
+    port: "{{ app_port }}"
+    host: localhost
+    delay: 5
+    timeout: 120
+    state: started
+  become: yes
+
+- name: Pause for application startup
+  pause:
+    seconds: 5
+
+- name: Check application health endpoint
+  uri:
+    url: "http://localhost:{{ app_port }}/"
+    status_code: 200
+    return_content: no
+  register: health_check
+  until: health_check.status == 200
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+  failed_when: health_check.status != 200
+
+- name: Get service status
+  command: systemctl status {{ service_name }}
+  register: service_status_output
+  changed_when: false
+  become: yes
+  failed_when: false
+
+- name: Display deployment success message
+  debug:
+    msg:
+      - "=========================================="
+      - "DEPLOYMENT SUCCESSFUL"
+      - "=========================================="
+      - "Application: {{ service_name }}"
+      - "Status: Running"
+      - "Port: {{ app_port }}"
+      - "Health check: PASSED"
+      - "=========================================="

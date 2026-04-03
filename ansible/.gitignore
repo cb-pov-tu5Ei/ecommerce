@@ -1,0 +1,21 @@
+# Ansible runtime files
+*.retry
+*.log
+ansible.log
+
+# Backup files
+*~
+*.swp
+*.bak
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+.vault_pass
+
+# Local testing artifacts
+files/*.jar
