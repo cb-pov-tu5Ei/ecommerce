@@ -2,6 +2,17 @@ apiVersion: automation.cloudbees.io/v1alpha1
 kind: workflow
 name: deploy
 on:
+  workflow_dispatch:
+    inputs:
+      artifact-id:
+        type: string
+        required: true
+      artifact-url:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
   workflow_call:
     inputs:
       artifact-id:
