@@ -48,7 +48,7 @@ jobs:
 
           # Setup SSH key and config
           mkdir -p ~/.ssh
-          echo "${{ secrets.ssh_key }}" > ~/.ssh/id_rsa
+          printf "%b" "${{ secrets.ssh_key }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
           # Add SSH config to handle key properly
