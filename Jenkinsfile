@@ -15,13 +15,6 @@ spec:
     command:
     - cat
     tty: true
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "500m"
-      limits:
-        memory: "2Gi"
-        cpu: "2000m"
     volumeMounts:
     - name: maven-repo
       mountPath: /root/.m2/repository
