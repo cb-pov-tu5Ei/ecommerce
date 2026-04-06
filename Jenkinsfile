@@ -32,7 +32,6 @@ spec:
 
     environment {
         MAVEN_OPTS = '-Dmaven.repo.local=/root/.m2/repository'
-        ARTIFACT_VERSION = '0.0.2-SNAPSHOT'
         ARTIFACTORY_URL = 'https://artifactory.tjx-poc.cb-demos.io'
     }
 
@@ -50,6 +49,15 @@ spec:
                             echo "Message: $(git log -1 --pretty=format:'%s')"
                             chmod +x mvnw
                         '''
+
+                        // Extract version from pom.xml
+                        env.ARTIFACT_VERSION = sh(
+                            script: './mvnw help:evaluate -Dexpression=project.version -q -DforceStdout',
+                            returnStdout: true
+                        ).trim()
+
+                        echo "=== Project Version from pom.xml ==="
+                        echo "Version: ${env.ARTIFACT_VERSION}"
                     }
                 }
             }
