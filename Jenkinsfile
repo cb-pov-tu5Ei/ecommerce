@@ -32,7 +32,7 @@ spec:
 
     environment {
         MAVEN_OPTS = '-Dmaven.repo.local=/root/.m2/repository'
-        ARTIFACT_VERSION = '0.0.1-SNAPSHOT'
+        ARTIFACT_VERSION = '0.0.2-SNAPSHOT'
         ARTIFACTORY_URL = 'https://artifactory.tjx-poc.cb-demos.io'
     }
 
