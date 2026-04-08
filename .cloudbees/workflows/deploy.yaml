@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: cloudbees-io/checkout@v1
+        with:
+          repository: cb-pov-tu5Ei/ecommerce
 
       - name: Run Ansible deployment
         id: deploy
