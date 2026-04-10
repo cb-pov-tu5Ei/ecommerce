@@ -34,7 +34,7 @@ jobs:
         with:
           repository: https://github.com/cb-pov-tu5Ei/ecommerce
       - name: run ansible playbook
-        uses: ./.cloudbees/actions/run-ansible
+        uses: https://github.com/cb-pov-tu5Ei/ecommerce/.cloudbees/actions/run-ansible
         with:
           artifact-url: ${{ inputs.artifacts-url }}
           environment: ${{ inputs.environment }}
