@@ -30,7 +30,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout repository
-        uses: cloudbees-io/checkout@v1
+        uses: cloudbees-io/checkout@v2
         with:
           repository: cb-pov-tu5Ei/ecommerce
 
