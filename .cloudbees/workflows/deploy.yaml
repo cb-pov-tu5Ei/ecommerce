@@ -33,64 +33,9 @@ jobs:
         uses: cloudbees-io/checkout@v2
         with:
           repository: https://github.com/cb-pov-tu5Ei/ecommerce
-
-      - name: Run Ansible deployment
-        id: deploy
-        uses: docker://python:3.11-slim
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: "False"
-        run: |
-          # Install Ansible and dependencies
-          apt-get update && apt-get install -y sshpass openssh-client
-          pip install ansible
-
-          echo "Deploying to: ${{ vars.ip_address }}"
-          echo "User: ${{ vars.user }}"
-          echo "Artifact: ${{ inputs.artifact-url }}"
-
-          # Setup SSH key and config
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ssh_key }}" | base64 -d > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-          # Add SSH config to handle key properly
-          cat > ~/.ssh/config <<EOF
-          Host *
-              StrictHostKeyChecking no
-              IdentityFile ~/.ssh/id_rsa
-              PubkeyAcceptedKeyTypes +ssh-rsa
-              HostkeyAlgorithms +ssh-rsa
-          EOF
-          chmod 600 ~/.ssh/config
-
-          # Run Ansible playbook
-          cd ansible
-          ansible-playbook -i "${{ vars.ip_address }}," deploy.yml \
-            -e "ansible_user=${{ vars.user }}" \
-            -e "ansible_ssh_private_key_file=~/.ssh/id_rsa" \
-            -e "artifactory_user=${{ secrets.artifactory_user }}" \
-            -e "artifactory_password=${{ secrets.artifactory_password }}" \
-            -e "deploy_environment=${{ inputs.environment }}" \
-            -e "artifact_url=${{ inputs.artifact-url }}"
-
-      - name: Register deployed artifact
-        uses: cloudbees-io/register-deployed-artifact@v2
+      - name: run ansible playbook
+        uses: ./.cloudbees/actions/run-ansible
         with:
-          artifact-id: ${{ inputs.artifact-id }}
-
-      - name: Publish evidence
-        uses: cloudbees-io/publish-evidence-item@v1
-        with:
-          content: |-
-            ## Deployed to ${{ inputs.environment }}
-
-            **Application URL**: [http://${{ vars.ip_address }}:8080/](http://${{ vars.ip_address }}:8080/)
-
-            **Artifact**: ${{ inputs.artifact-url }}
-
-            **Environment**: ${{ inputs.environment }}
-
-            **VM IP**: ${{ vars.ip_address }}
-
-            **Deployment Time**: ${{ cloudbees.run_id }}
-          format: MARKDOWN
+          artifact-url: ${{ inputs.artifacts-url }}
+          environment: ${{ inputs.environment }}
+  
