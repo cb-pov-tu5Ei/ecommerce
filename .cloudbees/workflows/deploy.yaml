@@ -32,7 +32,7 @@ jobs:
       - name: Checkout repository
         uses: cloudbees-io/checkout@v2
         with:
-          repository: cb-pov-tu5Ei/ecommerce
+          repository: https://github.com/cb-pov-tu5Ei/ecommerce
 
       - name: Run Ansible deployment
         id: deploy
