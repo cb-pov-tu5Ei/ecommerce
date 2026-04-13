@@ -7,6 +7,9 @@ inputs:
   artifact-url:
     required: true
     description: url for the deployed artifact
+  artifact-id:
+    required: true
+    description: id for the deployed artifact
   environment:
     required: true
     description: environment for the deployed artifact

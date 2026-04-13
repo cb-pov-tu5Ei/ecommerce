@@ -37,4 +37,5 @@ jobs:
         uses: https://github.com/cb-pov-tu5Ei/ecommerce/.cloudbees/actions/run-ansible
         with:
           artifact-url: ${{ inputs.artifact-url }}
+          artifact-id: ${{ inputs.artifact-id }}
           environment: ${{ inputs.environment }}
