@@ -29,6 +29,14 @@ jobs:
   deploy:
     environment: ${{ inputs.environment }}
     steps:
+      - name: Get current deployment version
+        id: current-version
+        uses: https://github.com/cb-demos/current-env-inventory
+        with:
+          organization-id: ${{ cloudbees.org.id }}
+          environment-name: ${{ inputs.environment }}
+          artifact-name: ecommerce
+          api-token: ${{ secrets.UNIFY_PAT }}
       - name: Checkout repository
         uses: cloudbees-io/checkout@v2
         with:
@@ -38,4 +46,11 @@ jobs:
         with:
           artifact-url: ${{ inputs.artifact-url }}
           artifact-id: ${{ inputs.artifact-id }}
+          environment: ${{ inputs.environment }}
+      - name: rollback to previous version
+        if: ${{ failure() }}
+        uses: https://github.com/cb-pov-tu5Ei/ecommerce/.cloudbees/actions/run-ansible
+        with:
+          artifact-url: ${{ steps.current-version.outputs.artifact-url }}
+          artifact-id: ${{ steps.current-version.outputs.artifact-id }}
           environment: ${{ inputs.environment }}
