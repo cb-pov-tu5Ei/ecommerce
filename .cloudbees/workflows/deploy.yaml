@@ -33,7 +33,7 @@ jobs:
         id: current-version
         uses: https://github.com/cb-demos/current-env-inventory
         with:
-          organization-id: ${{ cloudbees.org.id }}
+          organization-id: 51ee5c7b-c124-48ca-be09-b6f8297ddca2
           environment-name: ${{ inputs.environment }}
           artifact-name: ecommerce
           api-token: ${{ secrets.UNIFY_PAT }}
