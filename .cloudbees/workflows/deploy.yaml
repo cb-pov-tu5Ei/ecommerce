@@ -25,6 +25,7 @@ on:
         type: string
         required: true
 
+
 jobs:
   deploy:
     environment: ${{ inputs.environment }}
