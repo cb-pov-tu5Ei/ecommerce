@@ -5,15 +5,23 @@ name: dummy-orchestrator
 on:
   workflow_dispatch:
     inputs:
-      deployment-name:
+      artifact-version:
         type: string
         required: true
 
-      environment:
+      target-environment:
         type: string
         required: true
 
-      deployment-mode:
+      deployment-region:
+        type: string
+        required: true
+
+      enable-maintenance-mode:
+        type: boolean
+        required: false
+
+      deployment-strategy:
         type: string
         required: true
 
@@ -23,19 +31,24 @@ jobs:
       - name: Print deployment inputs
         uses: docker://alpine:latest
         run: |
+          echo "================================="
           echo "Starting orchestration test"
-          echo "Deployment Name: ${{ inputs.deployment-name }}"
-          echo "Environment: ${{ inputs.environment }}"
-          echo "Deployment Mode: ${{ inputs.deployment-mode }}"
+          echo "================================="
+          echo "Artifact Version: ${{ inputs.artifact-version }}"
+          echo "Target Environment: ${{ inputs.target-environment }}"
+          echo "Deployment Region: ${{ inputs.deployment-region }}"
+          echo "Maintenance Mode: ${{ inputs.enable-maintenance-mode }}"
+          echo "Deployment Strategy: ${{ inputs.deployment-strategy }}"
+          echo "================================="
 
   simulate-deployment:
     needs: validate-inputs
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.target-environment }}
     steps:
       - name: Simulate deployment execution
         uses: docker://alpine:latest
         run: |
-          echo "Simulating deployment..."
+          echo "Starting simulated deployment..."
           sleep 15
           echo "Deployment completed successfully"
 
@@ -48,11 +61,15 @@ jobs:
           content: |-
             ## Dummy Deployment Completed
 
-            Deployment Name: ${{ inputs.deployment-name }}
+            Artifact Version: ${{ inputs.artifact-version }}
 
-            Environment: ${{ inputs.environment }}
+            Target Environment: ${{ inputs.target-environment }}
 
-            Deployment Mode: ${{ inputs.deployment-mode }}
+            Deployment Region: ${{ inputs.deployment-region }}
+
+            Maintenance Mode: ${{ inputs.enable-maintenance-mode }}
+
+            Deployment Strategy: ${{ inputs.deployment-strategy }}
 
             Status: SUCCESS
           format: MARKDOWN
