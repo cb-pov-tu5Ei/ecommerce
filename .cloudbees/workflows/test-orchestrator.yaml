@@ -36,6 +36,3 @@ jobs:
           echo "Deployment Region: ${{ inputs.deployment-region }}"
           echo "Maintenance Mode: ${{ inputs.enable-maintenance-mode }}"
           echo "Deployment Strategy: ${{ inputs.deployment-strategy }}"
-
-    delegates:
-      - cloudbees-io/manual-approval@v1
