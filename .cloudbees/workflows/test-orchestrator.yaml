@@ -28,11 +28,3 @@ on:
 jobs:
   test-stage:
     environment: ${{ inputs.target-environment }}
-    steps:
-      - name: Print input parameters
-        run: |
-          echo "Artifact Version: ${{ inputs.artifact-version }}"
-          echo "Target Environment: ${{ inputs.target-environment }}"
-          echo "Deployment Region: ${{ inputs.deployment-region }}"
-          echo "Maintenance Mode: ${{ inputs.enable-maintenance-mode }}"
-          echo "Deployment Strategy: ${{ inputs.deployment-strategy }}"
