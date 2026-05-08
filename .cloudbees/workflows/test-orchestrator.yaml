@@ -1,0 +1,58 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: dummy-orchestrator
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment-name:
+        type: string
+        required: true
+
+      environment:
+        type: string
+        required: true
+
+      deployment-mode:
+        type: string
+        required: true
+
+jobs:
+  validate-inputs:
+    steps:
+      - name: Print deployment inputs
+        uses: docker://alpine:latest
+        run: |
+          echo "Starting orchestration test"
+          echo "Deployment Name: ${{ inputs.deployment-name }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Deployment Mode: ${{ inputs.deployment-mode }}"
+
+  simulate-deployment:
+    needs: validate-inputs
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Simulate deployment execution
+        uses: docker://alpine:latest
+        run: |
+          echo "Simulating deployment..."
+          sleep 15
+          echo "Deployment completed successfully"
+
+  publish-evidence:
+    needs: simulate-deployment
+    steps:
+      - name: Publish evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+        with:
+          content: |-
+            ## Dummy Deployment Completed
+
+            Deployment Name: ${{ inputs.deployment-name }}
+
+            Environment: ${{ inputs.environment }}
+
+            Deployment Mode: ${{ inputs.deployment-mode }}
+
+            Status: SUCCESS
+          format: MARKDOWN
