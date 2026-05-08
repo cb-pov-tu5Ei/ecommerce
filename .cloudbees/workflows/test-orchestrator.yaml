@@ -30,6 +30,7 @@ jobs:
     environment: ${{ inputs.target-environment }}
     steps:
       - name: Print input parameters
+        uses: docker://alpine:latest
         run: |
           echo "Artifact Version: ${{ inputs.artifact-version }}"
           echo "Target Environment: ${{ inputs.target-environment }}"
