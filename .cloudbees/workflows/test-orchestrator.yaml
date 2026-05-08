@@ -28,3 +28,17 @@ on:
 jobs:
   test-stage:
     environment: ${{ inputs.target-environment }}
+    steps:
+      - name: Publish test evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+        with:
+          content: |-
+            Test orchestration workflow executed successfully.
+
+            Artifact Version: ${{ inputs.artifact-version }}
+            Environment: ${{ inputs.target-environment }}
+            Region: ${{ inputs.deployment-region }}
+            Maintenance Mode: ${{ inputs.enable-maintenance-mode }}
+            Deployment Strategy: ${{ inputs.deployment-strategy }}
+
+          format: MARKDOWN
