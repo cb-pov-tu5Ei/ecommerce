@@ -30,16 +30,19 @@ jobs:
     steps:
       - name: Print deployment inputs
         uses: docker://alpine:latest
-        run: |
-          echo "================================="
-          echo "Starting orchestration test"
-          echo "================================="
-          echo "Artifact Version: ${{ inputs.artifact-version }}"
-          echo "Target Environment: ${{ inputs.target-environment }}"
-          echo "Deployment Region: ${{ inputs.deployment-region }}"
-          echo "Maintenance Mode: ${{ inputs.enable-maintenance-mode }}"
-          echo "Deployment Strategy: ${{ inputs.deployment-strategy }}"
-          echo "================================="
+        entrypoint: /bin/sh
+        args:
+          - -c
+          - |
+              echo "================================="
+              echo "Starting orchestration test"
+              echo "================================="
+              echo "Artifact Version: ${{ inputs.artifact-version }}"
+              echo "Target Environment: ${{ inputs.target-environment }}"
+              echo "Deployment Region: ${{ inputs.deployment-region }}"
+              echo "Maintenance Mode: ${{ inputs.enable-maintenance-mode }}"
+              echo "Deployment Strategy: ${{ inputs.deployment-strategy }}"
+              echo "================================="
 
   simulate-deployment:
     needs: validate-inputs
@@ -47,10 +50,13 @@ jobs:
     steps:
       - name: Simulate deployment execution
         uses: docker://alpine:latest
-        run: |
-          echo "Starting simulated deployment..."
-          sleep 15
-          echo "Deployment completed successfully"
+        entrypoint: /bin/sh
+        args:
+          - -c
+          - |
+              echo "Starting simulated deployment..."
+              sleep 15
+              echo "Deployment completed successfully"
 
   publish-evidence:
     needs: simulate-deployment
