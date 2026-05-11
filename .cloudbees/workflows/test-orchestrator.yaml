@@ -64,3 +64,4 @@ jobs:
             Deployment Strategy: ${{ inputs.deployment-strategy }}
 
           format: MARKDOWN
+
