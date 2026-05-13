@@ -1,67 +1,66 @@
 apiVersion: automation.cloudbees.io/v1alpha1
-kind: workflow
-name: test-orchestrator
+  kind: workflow
+  name: test-orchestrator
 
-on:
+  on:
     workflow_call:
-        inputs:
-          artifact-version:
-            type: string
-            required: true
+      inputs:
+        artifact-version:
+          type: string
+          required: true
 
-          target-environment:
-            type: string
-            required: true
+        target-environment:
+          type: string
+          required: true
 
-          deployment-region:
-            type: string
-            required: true
+        deployment-region:
+          type: string
+          required: true
 
-          enable-maintenance-mode:
-            type: boolean
-            required: false
+        enable-maintenance-mode:
+          type: boolean
+          required: false
 
-          deployment-strategy:
-            type: string
-            required: true
-            
-  workflow_dispatch:
-    inputs:
-      artifact-version:
-        type: string
-        required: true
+        deployment-strategy:
+          type: string
+          required: true
 
-      target-environment:
-        type: string
-        required: true
+    workflow_dispatch:
+      inputs:
+        artifact-version:
+          type: string
+          required: true
 
-      deployment-region:
-        type: string
-        required: true
+        target-environment:
+          type: string
+          required: true
 
-      enable-maintenance-mode:
-        type: boolean
-        required: false
+        deployment-region:
+          type: string
+          required: true
 
-      deployment-strategy:
-        type: string
-        required: true
+        enable-maintenance-mode:
+          type: boolean
+          required: false
 
-jobs:
-  test-stage:
-    environment: ${{ inputs.target-environment }}
-    steps:
-      - name: Publish test evidence
-        uses: cloudbees-io/publish-evidence-item@v1
-        with:
-          content: |-
-            Test orchestration workflow executed successfully.
+        deployment-strategy:
+          type: string
+          required: true
 
-            Artifact Version: ${{ inputs.artifact-version }}
-            Environment: ${{ inputs.target-environment }}
-            Region: ${{ inputs.deployment-region }}
-            Maintenance Mode: ${{ inputs.enable-maintenance-mode }}
-            Deployment Strategy: ${{ inputs.deployment-strategy }}
+  jobs:
+    test-stage:
+      environment: ${{ inputs.target-environment }}
+      steps:
+        - name: Publish test evidence
+          uses: cloudbees-io/publish-evidence-item@v1
+          with:
+            content: |-
+              Test orchestration workflow executed successfully.
 
-          format: MARKDOWN
+              Artifact Version: ${{ inputs.artifact-version }}
+              Environment: ${{ inputs.target-environment }}
+              Region: ${{ inputs.deployment-region }}
+              Maintenance Mode: ${{ inputs.enable-maintenance-mode }}
+              Deployment Strategy: ${{ inputs.deployment-strategy }}
 
+            format: MARKDOWN
