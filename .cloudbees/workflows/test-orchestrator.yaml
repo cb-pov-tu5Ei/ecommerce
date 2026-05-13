@@ -10,20 +10,20 @@ on:
             required: true
 
           target-environment:
-          type: string
-          required: true
+            type: string
+            required: true
 
           deployment-region:
-          type: string
-          required: true
+            type: string
+            required: true
 
           enable-maintenance-mode:
-          type: boolean
-          required: false
+            type: boolean
+            required: false
 
           deployment-strategy:
-          type: string
-          required: true
+            type: string
+            required: true
             
   workflow_dispatch:
     inputs:
